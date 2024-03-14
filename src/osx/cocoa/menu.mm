@@ -205,9 +205,13 @@ public :
         
         [NSApp setAppleMenu:[[m_osxMenu itemAtIndex:0] submenu]];
 
-        wxCFStringRef cfText( wxTheApp->GetAppDisplayName() );        
-        NSMenu* appMenu = [[m_osxMenu itemAtIndex:0] submenu];
-        [appMenu setTitle:cfText.AsNSString()];
+        if (wxApp::MacIsAppDisplayNameUsedForAppMenu())
+        {
+          // set the title of the OSX Application menu to AppDisplayName
+          wxCFStringRef cfText( wxTheApp->GetAppDisplayName() );
+          NSMenu* appMenu = [[m_osxMenu itemAtIndex:0] submenu];
+          [appMenu setTitle:cfText.AsNSString()];
+        }
         
         wxMenuItem *services = peer->FindItem(wxID_OSX_SERVICES);
         if ( services )

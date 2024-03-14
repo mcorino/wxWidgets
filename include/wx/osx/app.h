@@ -109,6 +109,11 @@ public:
     static long           s_macExitMenuItemId ;
     static wxString       s_macHelpMenuTitleName ;
     static wxString       s_macWindowMenuTitleName ;
+    static bool           s_macUseAppDisplayNameForAppMenu ;
+
+    // Enable or disable (default) using the AppDisplayName as title for the OSX Application menu.
+    static void           MacUseAppDisplayNameForAppMenu(bool enable=true) { s_macUseAppDisplayNameForAppMenu = enable; }
+    static bool           MacIsAppDisplayNameUsedForAppMenu() { return s_macUseAppDisplayNameForAppMenu; }
 
     WXEVENTREF            MacGetCurrentEvent() { return m_macCurrentEvent ; }
 
