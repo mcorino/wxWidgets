@@ -199,19 +199,25 @@ public :
         [m_osxMenu removeItem:(NSMenuItem*) pItem->GetPeer()->GetHMenuItem()];
     }
     
+    void MacSetupAppleMenuTitle()
+    {
+      if (wxApp::MacIsAppDisplayNameUsedForAppMenu())
+      {
+        // set the title of the OSX Application menu to AppDisplayName
+        wxCFStringRef cfText( wxTheApp->GetAppDisplayName() );
+        NSMenu* appMenu = [[m_osxMenu itemAtIndex:0] submenu];
+        [appMenu setTitle:cfText.AsNSString()];
+      }
+
+    }
+
     virtual void MacSetupAppleMenu()
     {
         wxMenu* peer = GetWXPeer();
         
         [NSApp setAppleMenu:[[m_osxMenu itemAtIndex:0] submenu]];
 
-        if (wxApp::MacIsAppDisplayNameUsedForAppMenu())
-        {
-          // set the title of the OSX Application menu to AppDisplayName
-          wxCFStringRef cfText( wxTheApp->GetAppDisplayName() );
-          NSMenu* appMenu = [[m_osxMenu itemAtIndex:0] submenu];
-          [appMenu setTitle:cfText.AsNSString()];
-        }
+        MacSetupAppleMenuTitle();
         
         wxMenuItem *services = peer->FindItem(wxID_OSX_SERVICES);
         if ( services )
@@ -330,6 +336,11 @@ public :
         MacSetupHelpMenu();
         MacSetupWindowMenu();
         
+    }
+
+    virtual void UpdateRoot() override
+    {
+        MacSetupAppleMenuTitle();
     }
 
     virtual void Enable( bool WXUNUSED(enable) )
