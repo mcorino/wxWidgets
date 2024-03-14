@@ -611,12 +611,9 @@ void wxMenuBar::MacUninstallMenuBar()
 
 void wxMenuBar::MacInstallMenuBar()
 {
-  if ( s_macInstalledMenuBar == this )
-  {
-    m_rootMenu->GetPeer()->UpdateRoot();
-  }
-  else
-  {
+    if ( s_macInstalledMenuBar == this )
+        return ;
+
     m_rootMenu->GetPeer()->MakeRoot();
     
     // hide items in the apple menu that don't exist in the wx menubar
@@ -647,7 +644,6 @@ void wxMenuBar::MacInstallMenuBar()
     }
 
     s_macInstalledMenuBar = this;
-  }
 }
 
 void wxMenuBar::EnableTop(size_t pos, bool enable)

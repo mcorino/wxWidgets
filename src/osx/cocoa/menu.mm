@@ -205,7 +205,8 @@ public :
       {
         // set the title of the OSX Application menu to AppDisplayName
         wxCFStringRef cfText( wxTheApp->GetAppDisplayName() );
-        NSMenu* appMenu = [[m_osxMenu itemAtIndex:0] submenu];
+        NSMenu* mainMenu = [[NSApplication sharedApplication] mainMenu];
+        NSMenu* appMenu = [[mainMenu itemAtIndex:0] submenu];
         [appMenu setTitle:cfText.AsNSString()];
       }
 
@@ -216,8 +217,6 @@ public :
         wxMenu* peer = GetWXPeer();
         
         [NSApp setAppleMenu:[[m_osxMenu itemAtIndex:0] submenu]];
-
-        MacSetupAppleMenuTitle();
         
         wxMenuItem *services = peer->FindItem(wxID_OSX_SERVICES);
         if ( services )
@@ -336,10 +335,6 @@ public :
         MacSetupHelpMenu();
         MacSetupWindowMenu();
         
-    }
-
-    virtual void UpdateRoot() override
-    {
         MacSetupAppleMenuTitle();
     }
 

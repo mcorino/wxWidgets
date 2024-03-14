@@ -198,7 +198,6 @@ public :
     virtual void Remove( wxMenuItem *pItem ) = 0;
 
     virtual void MakeRoot() = 0;
-    virtual void UpdateRoot() = 0;
 
     virtual void SetTitle( const wxString& text ) = 0;
 
