@@ -1093,6 +1093,25 @@ public:
     ///@{
 
     /**
+        Enable or disable (default) using the AppDisplayName as title for the OSX Application menu.
+
+        @onlyfor{wxosx}
+
+        @since 3.2.5
+    */
+    static void MacUseAppDisplayNameForAppMenu(bool enable=true);
+
+    /**
+        Returns @true if the AppDisplayName is to be used to set the title of the standard OSX
+        Application menu, @false if not (this is the default).
+
+        @onlyfor{wxosx}
+
+        @since 3.2.5
+    */
+    static bool MacIsAppDisplayNameUsedForAppMenu();
+
+    /**
         Called in response of an "open-application" Apple event.
         Override this to create a new document in your app.
 
