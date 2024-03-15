@@ -35,6 +35,15 @@
 
 @implementation wxNSMenu
 
+- (id) init
+{
+    if ( self = [super init] )
+    {
+        impl = nullptr;
+    }
+    return self;
+}
+
 - (id) initWithTitle:(NSString*) title
 {
     if ( self = [super initWithTitle:title] )
@@ -52,6 +61,13 @@
 - (wxMenuImpl*) implementation
 {
     return impl;
+}
+
+- (id)copyWithZone:(NSZone *)zone
+{
+    newCopy = [super copyWithZone:zone];
+    [newCopy setImplementation:impl];
+    return newCopy;
 }
 
 @end
@@ -198,25 +214,12 @@ public :
     {
         [m_osxMenu removeItem:(NSMenuItem*) pItem->GetPeer()->GetHMenuItem()];
     }
-    
-    void MacSetupAppleMenuTitle()
-    {
-      if (wxApp::MacIsAppDisplayNameUsedForAppMenu())
-      {
-        // set the title of the OSX Application menu to AppDisplayName
-        wxCFStringRef cfText( wxTheApp->GetAppDisplayName() );
-        NSMenu* mainMenu = [[NSApplication sharedApplication] mainMenu];
-        NSMenu* appMenu = [[mainMenu itemAtIndex:0] submenu];
-        [appMenu setTitle:cfText.AsNSString()];
-      }
-
-    }
 
     virtual void MacSetupAppleMenu()
     {
         wxMenu* peer = GetWXPeer();
         
-        [NSApp setAppleMenu:[[m_osxMenu itemAtIndex:0] submenu]];
+        // [NSApp setAppleMenu:[[m_osxMenu itemAtIndex:0] submenu]];
         
         wxMenuItem *services = peer->FindItem(wxID_OSX_SERVICES);
         if ( services )
@@ -327,15 +330,83 @@ public :
         }
     }
 
+    void MacCreateMainMenu()
+    {
+        // create the application's main menu
+        wxNSMenu* mainMenu = [[wxNSMenu alloc] init];
+        [mainMenu setImplementation:GetWXPeer()];
+        // create initial Apple Menu from copy of the current menu implementation
+        wxNSMenuItem* appMenuItem = [[m_osxMenu itemAtIndex:0]] copy];
+        // set as first item in main menu
+        [mainMenu addItem:appMenuItem];
+
+        [NSApp setMainMenu:mainMenu];
+
+        // Handle Apple Menu title
+        if (wxApp::MacIsAppDisplayNameUsedForAppMenu())
+        {
+          // set the title of the OSX Application menu to AppDisplayName
+          wxCFStringRef cfText( wxTheApp->GetAppDisplayName() );
+          NSMenu* appMenu = [[mainMenu itemAtIndex:0] submenu];
+          [appMenu setTitle:cfText.AsNSString()];
+        }
+
+        wxMenuBar::MacSetMainMenuHMenu(mainMenu);
+    }
+
+    void MacUpdateMainMenu()
+    {
+        // update implementation
+        [mainMenu setImplementation:GetWXPeer()];
+        // remove all main menu items except the Apple Menu
+        wxMSMenu* mainMenu = wxMenuBar::MacGetMainMenuHMenu();
+        NSInteger nrOfItems = [mainMenu numberOfItems];
+        NSInteger i = 1;
+        while (i < nrOfItems)
+        {
+          [mainMenu removeItemAtIndex:i];
+          ++i;
+        }
+        // replace by items of active menu (except Apple Menu)
+        nrOfItems = [m_osxMenu numberOfItems];
+        i = 1;
+        while (i < nrOfItems)
+        {
+          [mainMenu addItem:[m_osxMenu itemAtIndex:i]];
+          ++i;
+        }
+
+        // update Apple menu
+
+        // set current implementations
+        wxNSMenuItem* appMenuItem = [mainMenu itemAtIndex:0];
+        [appMenuItem setImplementation:[[m_osxMenu itemAtIndex:0] implementation];
+        wxNSMenu* appMenu = [appMenuItem submenu];
+        wxNSMenu* actAppMenu = [[m_osxMenu itemAtIndex:0] submenu];
+        [appMenu setImplementation:[actAppMenu implementation];
+
+        // replace menu content
+        [appMenu removeAllItems];
+        for (wxNSMenuItem* actAppItem in [actAppMenu itemArray])
+        {
+          [appMenu addItem:actAppItem];
+        }
+    }
+
     virtual void MakeRoot() override
     {
-        [NSApp setMainMenu:m_osxMenu];
+        if (wxMenuBar::MacGetMainMenuHMenu() == nullptr)
+        {
+            MacCreateMainMenu();
+        }
+        else
+        {
+            MacUpdateMainMenu();
+        }
 
         MacSetupAppleMenu();
         MacSetupHelpMenu();
         MacSetupWindowMenu();
-        
-        MacSetupAppleMenuTitle();
     }
 
     virtual void Enable( bool WXUNUSED(enable) )
