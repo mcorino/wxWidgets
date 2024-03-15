@@ -174,6 +174,9 @@ public:
 
     static WXHMENU MacGetWindowMenuHMenu() { return s_macWindowMenuHandle ; }
 
+    static WXHMENU MacGetMainMenuHMenu() { return s_macMainMenuHandle ; }
+    static void MacSetMainMenuHMenu(WXHMENU h) { s_macMainMenuHandle = h ; }
+
     virtual void DoGetPosition(int *x, int *y) const override;
     virtual void DoGetSize(int *width, int *height) const override;
     virtual void DoGetClientSize(int *width, int *height) const override;
@@ -184,6 +187,7 @@ protected:
 
     static bool     s_macAutoWindowMenu ;
     static WXHMENU  s_macWindowMenuHandle ;
+    static WXHMENU  s_macMainMenuHandle ;
 
 private:
     static wxMenuBar*            s_macInstalledMenuBar ;

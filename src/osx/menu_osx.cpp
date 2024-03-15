@@ -477,6 +477,7 @@ wxMenuBar* wxMenuBar::s_macInstalledMenuBar = nullptr ;
 wxMenuBar* wxMenuBar::s_macCommonMenuBar = nullptr ;
 bool     wxMenuBar::s_macAutoWindowMenu = true ;
 WXHMENU  wxMenuBar::s_macWindowMenuHandle = nullptr ;
+WXHMENU  wxMenuBar::s_macMainMenuHandle = nullptr ;
 
 
 const int firstMenuPos = 1; // to account for the 0th application menu on mac

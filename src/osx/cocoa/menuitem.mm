@@ -124,6 +124,13 @@ SEL wxOSXGetSelectorFromID(int menuId )
     return impl;
 }
 
+- (id)copyWithZone:(NSZone *)zone
+{
+    newCopy = [super copyWithZone:zone];
+    [newCopy setImplementation:impl];
+    return newCopy;
+}
+
 @end
 
 void wxMacCocoaMenuItemSetAccelerator( NSMenuItem* menuItem, wxAcceleratorEntry* entry )
