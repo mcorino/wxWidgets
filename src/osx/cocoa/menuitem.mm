@@ -126,7 +126,7 @@ SEL wxOSXGetSelectorFromID(int menuId )
 
 - (id)copyWithZone:(NSZone *)zone
 {
-    newCopy = [super copyWithZone:zone];
+    wxNSMenuItem* newCopy = [super copyWithZone:zone];
     [newCopy setImplementation:impl];
     return newCopy;
 }

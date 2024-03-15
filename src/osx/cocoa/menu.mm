@@ -65,7 +65,7 @@
 
 - (id)copyWithZone:(NSZone *)zone
 {
-    newCopy = [super copyWithZone:zone];
+    wxNSMenu* newCopy = [super copyWithZone:zone];
     [newCopy setImplementation:impl];
     return newCopy;
 }
@@ -334,9 +334,9 @@ public :
     {
         // create the application's main menu
         wxNSMenu* mainMenu = [[wxNSMenu alloc] init];
-        [mainMenu setImplementation:GetWXPeer()];
-        // create initial Apple Menu from copy of the current menu implementation
-        wxNSMenuItem* appMenuItem = [[m_osxMenu itemAtIndex:0]] copy];
+        [mainMenu setImplementation:this];
+        // create initial Apple Menu from copy of the current menu
+        wxNSMenuItem* appMenuItem = [[m_osxMenu itemAtIndex:0] copy];
         // set as first item in main menu
         [mainMenu addItem:appMenuItem];
 
@@ -356,10 +356,10 @@ public :
 
     void MacUpdateMainMenu()
     {
+        wxNSMenu* mainMenu = wxMenuBar::MacGetMainMenuHMenu();
         // update implementation
-        [mainMenu setImplementation:GetWXPeer()];
+        [mainMenu setImplementation:this];
         // remove all main menu items except the Apple Menu
-        wxMSMenu* mainMenu = wxMenuBar::MacGetMainMenuHMenu();
         NSInteger nrOfItems = [mainMenu numberOfItems];
         NSInteger i = 1;
         while (i < nrOfItems)
@@ -380,7 +380,8 @@ public :
 
         // set current implementations
         wxNSMenuItem* appMenuItem = [mainMenu itemAtIndex:0];
-        [appMenuItem setImplementation:[[m_osxMenu itemAtIndex:0] implementation];
+        wxNSMenuItem* actAppMenuItem = [m_osxMenu itemAtIndex:0];
+        [appMenuItem setImplementation:[actAppMenuItem implementation];
         wxNSMenu* appMenu = [appMenuItem submenu];
         wxNSMenu* actAppMenu = [[m_osxMenu itemAtIndex:0] submenu];
         [appMenu setImplementation:[actAppMenu implementation];
